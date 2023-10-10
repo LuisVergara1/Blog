@@ -52,7 +52,7 @@ public class DatosIniciales implements CommandLineRunner {
         usuario1.setCorreo("luismarcelo.v.c@hotmail.com");
         usuario1.setContraseña("User123");
         usuario1.setRol("Admin");
-        usuarioService.guardarUsuario(usuario1);
+        usuarioService.guardarUsuariosH2(usuario1);
 
         Post post1 = new Post();
         post1.setTitulo("Titulo Noticia1");

@@ -17,6 +17,8 @@ import com.Blog.entity.Usuario;
 import com.Blog.service.usuario.UsuarioService;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -25,15 +27,21 @@ import lombok.RequiredArgsConstructor;
 public class UsuarioController {
 
     private final UsuarioService usuarioService;
-    @Operation(summary= "Crear User ", description = "Crea Nuevos Usuarios Donde Rol por Defecto Sera Usuario ")
+    @Operation(summary = "Crear Usuario",
+               description = "Crea un nuevo usuario con el rol por defecto 'Usuario'.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Usuario creado exitosamente"),
+        @ApiResponse(responseCode = "400", description = "Solicitud inválida")
+    })
     @PostMapping("/created")
-    public ResponseEntity<Usuario>createUser(@RequestBody UserCreated usuariocreado)
+    public ResponseEntity<?>createUser(@RequestBody UserCreated usuariocreado)
     {   
-         Usuario user =  new Usuario();
-         user.setRol("Usuario");
-         Usuario  userCreated = usuarioService.guardarUsuario(user);
-        
-        return new ResponseEntity<>(userCreated, HttpStatus.CREATED);
+        try {
+            Usuario newUser = usuarioService.guardarUsuario(usuariocreado);
+            return ResponseEntity.ok(newUser);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
 
@@ -44,17 +52,31 @@ public class UsuarioController {
         return new ResponseEntity<>(usuarios,HttpStatus.OK);
     }
 
+    @Operation(summary = "Buscar Usuario",
+               description = "Busca Un Usuario Segun su ID.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "302", description = "Usuario Encontrado"),
+        @ApiResponse(responseCode = "404", description = "Usuario no Encontrado")
+    })
     @GetMapping("/{id}")
     public ResponseEntity<Usuario>getUserById(@PathVariable("id") Long id)
     {
         Usuario usuarioEncontrado = usuarioService.obteneUsuario(id);
+        if(usuarioEncontrado !=null ){
         return new ResponseEntity<>(usuarioEncontrado,HttpStatus.OK);
+        }
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    
     }
+
+
     @Operation(summary= "Modify Users ", description = "modify Users ")
     @PutMapping("/{id}/modificar")
     public ResponseEntity<String>modificarUsuario(@PathVariable("id")Long id , @RequestBody Usuario usuarioModificado)
     {
        Usuario usuarioencontrado = usuarioService.obteneUsuario(id);
+
+       if(usuarioencontrado!=null){
        if(usuarioencontrado.getRol().equals("Admin")|| usuarioencontrado.getId_usuario()==usuarioModificado.getId_usuario()){
          Usuario usuarioActualizado = usuarioService.modificarUsuario(id, usuarioModificado);
          if(usuarioActualizado!=null){
@@ -62,9 +84,12 @@ public class UsuarioController {
         }
         else
        {
-        return new ResponseEntity<>("Error al Actualizar",HttpStatus.NOT_ACCEPTABLE);
+        return new ResponseEntity<>("Error al Actualizar",HttpStatus.UNAUTHORIZED);
        }
        
+       }
+       }else{
+        return new ResponseEntity<>("Id De Usuario no Valido",HttpStatus.NOT_ACCEPTABLE);
        }
        return new ResponseEntity<>("No Tienes Permisos para Modificar este Usuario",HttpStatus.NOT_ACCEPTABLE);
   
