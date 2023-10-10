@@ -2,6 +2,7 @@ package com.Blog.service.post;
 
 import java.util.List;
 
+import com.Blog.DTO.PostCreated;
 import com.Blog.DTO.PostDetails;
 import com.Blog.DTO.PostFullDetails;
 import com.Blog.entity.Post;
@@ -16,7 +17,7 @@ public interface PostService {
 
     Boolean eliminarPost(Long id);
 
-    Post guardarPost(Long id,Post post);
+    Post guardarPost(Long id, PostCreated post);
 
     List<Post> buscarPostPorIdUser(Long id);
 

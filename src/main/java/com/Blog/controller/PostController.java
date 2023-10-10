@@ -13,11 +13,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.Blog.DTO.PostCreated;
 import com.Blog.DTO.PostDetails;
 import com.Blog.DTO.PostFullDetails;
 import com.Blog.entity.Post;
 import com.Blog.service.post.PostService;
 
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -62,10 +64,11 @@ public class PostController {
         }
     }
 
-
+    @Operation(summary= "Crear Post ", description = "Se debe Agregar el id del Usuario que crea el Post")
     @PostMapping("/{id}/created")
-    public ResponseEntity<String>createPost(@PathVariable("id")Long id ,@RequestBody Post post)
+    public ResponseEntity<String>createPost(@PathVariable("id")Long id ,@RequestBody PostCreated post)
     {
+        
         Post postcreated = postService.guardarPost(id, post);
 
         if(postcreated!=null)

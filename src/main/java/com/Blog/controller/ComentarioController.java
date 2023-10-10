@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.Blog.DTO.ComentarioTDO;
 import com.Blog.service.comentario.ComentarioService;
 
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 
 @RequestMapping("/comentario")
@@ -21,7 +22,7 @@ public class ComentarioController {
 
     
     private final ComentarioService comentarioService;
-
+    @Operation(summary= "Obtener Todos los Comentarios ", description = "Este EndPoint Permite Buscar un Producto Segun su ID")
     @GetMapping("/all")
     public ResponseEntity<List<ComentarioTDO>> allcomentarios()
     {

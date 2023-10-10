@@ -23,7 +23,9 @@ public class UsuarioServiceImpl implements UsuarioService{
     public Usuario modificarUsuario(Long id, Usuario usuarioModificado) {
        Usuario usuarioEncontrado = usuarioRepository.findById(id).get();
        usuarioEncontrado.setContraseña(usuarioModificado.getContraseña());
+       if(usuarioEncontrado.getRol()=="Admin"){
        usuarioEncontrado.setRol(usuarioModificado.getRol());
+       }
        usuarioRepository.save(usuarioEncontrado);
        return usuarioEncontrado;
     }

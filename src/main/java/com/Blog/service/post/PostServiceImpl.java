@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.Blog.DTO.ComentarioTDO;
+import com.Blog.DTO.PostCreated;
 import com.Blog.DTO.PostDetails;
 import com.Blog.DTO.PostFullDetails;
 import com.Blog.DTO.UserPostDTO;
@@ -99,10 +100,14 @@ public class PostServiceImpl implements PostService {
         return postEncontrado;
     }
     @Override
-    public Post guardarPost(Long id,Post post) {
+    public Post guardarPost(Long id, PostCreated post) {
+        Post newPost =  new Post();
         Usuario usuarioEncontrado = usuarioService.obteneUsuario(id);
-        post.setUsuario(usuarioEncontrado);
-        return postRepository.save(post);
+        newPost.setTitulo(post.getTitulo());
+        newPost.setDescripcion(post.getDescripcion());
+        newPost.setCategoria(post.getCategoria());
+        newPost.setUsuario(usuarioEncontrado);
+        return postRepository.save(newPost);
     }
     @Override
     public Post savePost(Post post) {
