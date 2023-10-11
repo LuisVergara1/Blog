@@ -55,7 +55,7 @@ public class UsuarioController {
     @Operation(summary = "Buscar Usuario",
                description = "Busca Un Usuario Segun su ID.")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "302", description = "Usuario Encontrado"),
+        @ApiResponse(responseCode = "200", description = "Usuario Encontrado"),
         @ApiResponse(responseCode = "404", description = "Usuario no Encontrado")
     })
     @GetMapping("/{id}")
