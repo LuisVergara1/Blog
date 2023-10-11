@@ -59,18 +59,25 @@ public class UsuarioController {
         @ApiResponse(responseCode = "404", description = "Usuario no Encontrado")
     })
     @GetMapping("/{id}")
-    public ResponseEntity<Usuario>getUserById(@PathVariable("id") Long id)
+    public ResponseEntity<?>getUserById(@PathVariable("id") Long id)
     {
         Usuario usuarioEncontrado = usuarioService.obteneUsuario(id);
         if(usuarioEncontrado !=null ){
         return new ResponseEntity<>(usuarioEncontrado,HttpStatus.OK);
         }
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>("Usuario No Encontrado",HttpStatus.NOT_FOUND);
     
     }
 
 
-    @Operation(summary= "Modify Users ", description = "modify Users ")
+    @Operation(summary = "Modificar Usuarios",
+               description = "Modifica Usuario el Id es del Usuario Actual de la Session")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Usuario Modificado"),
+        @ApiResponse(responseCode = "304", description = "Usuario no Modificado"),
+        @ApiResponse(responseCode = "404", description = "Usuario no Encontrado"),
+        @ApiResponse(responseCode = "401", description = "Sin Permisos Necesarios")
+    })
     @PutMapping("/{id}/modificar")
     public ResponseEntity<String>modificarUsuario(@PathVariable("id")Long id , @RequestBody Usuario usuarioModificado)
     {
@@ -84,14 +91,14 @@ public class UsuarioController {
         }
         else
        {
-        return new ResponseEntity<>("Error al Actualizar",HttpStatus.UNAUTHORIZED);
+        return new ResponseEntity<>("Error al Actualizar",HttpStatus.NOT_MODIFIED);
        }
        
        }
        }else{
-        return new ResponseEntity<>("Id De Usuario no Valido",HttpStatus.NOT_ACCEPTABLE);
+        return new ResponseEntity<>("Id De Usuario no Valido",HttpStatus.NOT_FOUND);
        }
-       return new ResponseEntity<>("No Tienes Permisos para Modificar este Usuario",HttpStatus.NOT_ACCEPTABLE);
+       return new ResponseEntity<>("No Tienes Permisos para Modificar este Usuario",HttpStatus.UNAUTHORIZED);
   
     }
 }
