@@ -1,11 +1,8 @@
 package com.Blog.h2;
 
-
 import org.springframework.beans.factory.annotation.Autowired;
-
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
-
 import com.Blog.entity.Comentario;
 import com.Blog.entity.Post;
 import com.Blog.entity.Usuario;
@@ -13,14 +10,12 @@ import com.Blog.service.comentario.ComentarioService;
 import com.Blog.service.post.PostService;
 import com.Blog.service.usuario.UsuarioService;
 
-
 @Component
 public class DatosIniciales implements CommandLineRunner {
 
     private final PostService postService;
     private final UsuarioService usuarioService;
     private final ComentarioService comentarioService;
-
 
     @Autowired
     public DatosIniciales( PostService postService,UsuarioService usuarioService, ComentarioService comentarioService)
@@ -41,7 +36,6 @@ public class DatosIniciales implements CommandLineRunner {
             e.printStackTrace();
         }
     }
-
 
     public void cargarDatosIniciales()
     {
@@ -88,13 +82,7 @@ public class DatosIniciales implements CommandLineRunner {
         comentario3.setUsuario(usuario1);
         comentarioService.save(comentario3);
 
-        // Comentario comentario4 = new Comentario();
-        // comentario4.setComentario("Prueba Post 3");
-        // comentario4.setPost(post3);
-        // comentario4.setUsuario(usuario1);
-        // comentarioService.save(comentario4);
-        
-         Post post3 = new Post();
+        Post post3 = new Post();
         post3.setTitulo("Titulo Noticia 3");
         post3.setDescripcion("Descripcion Noticia 3");
         post3.setCategoria("Internacional");

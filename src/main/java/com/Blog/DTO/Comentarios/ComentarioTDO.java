@@ -1,4 +1,6 @@
-package com.Blog.DTO;
+package com.Blog.DTO.Comentarios;
+
+import com.Blog.DTO.User.UserPostDTO;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -12,5 +14,4 @@ public class ComentarioTDO {
     private String descripcion;
     private UserPostDTO usuario;
     
-
 }

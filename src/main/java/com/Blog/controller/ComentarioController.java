@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.Blog.DTO.ComentarioTDO;
+import com.Blog.DTO.Comentarios.ComentarioTDO;
 import com.Blog.service.comentario.ComentarioService;
 
 import io.swagger.v3.oas.annotations.Operation;

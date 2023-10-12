@@ -13,5 +13,4 @@ public interface ComentarioRepository extends JpaRepository<Comentario,Long> {
 
     @Query("SELECT c FROM Comentario c WHERE c.post.id_post = :idPost")
     List<Comentario> findComentariosByPostId(Long idPost);
- 
 }

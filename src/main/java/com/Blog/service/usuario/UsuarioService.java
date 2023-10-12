@@ -2,7 +2,7 @@ package com.Blog.service.usuario;
 
 import java.util.List;
 
-import com.Blog.DTO.UserCreated;
+import com.Blog.DTO.User.UserCreated;
 import com.Blog.entity.Usuario;
 
 public interface UsuarioService {

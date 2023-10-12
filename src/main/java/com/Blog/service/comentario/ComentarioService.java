@@ -2,7 +2,7 @@ package com.Blog.service.comentario;
 
 import java.util.List;
 
-import com.Blog.DTO.ComentarioTDO;
+import com.Blog.DTO.Comentarios.ComentarioTDO;
 import com.Blog.entity.Comentario;
 
 public interface ComentarioService {

@@ -13,13 +13,18 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.Blog.DTO.PostCreated;
-import com.Blog.DTO.PostDetails;
-import com.Blog.DTO.PostFullDetails;
+import com.Blog.DTO.Post.PostCreated;
+import com.Blog.DTO.Post.PostDetails;
+import com.Blog.DTO.Post.PostFullDetails;
+import com.Blog.DTO.Post.PostModify;
 import com.Blog.entity.Post;
+import com.Blog.entity.Usuario;
 import com.Blog.service.post.PostService;
+import com.Blog.service.usuario.UsuarioService;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -28,18 +33,28 @@ import lombok.RequiredArgsConstructor;
 public class PostController {
 
     private final PostService postService;
+    private final UsuarioService usuarioService;
 
 
+    @Operation(summary = "Listar Post",
+               description = "Permite Listar Todos Los Post.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Post Listados"),
+    })
     @GetMapping("/all")
     public ResponseEntity<List<PostDetails>>getall()
     {
         List<PostDetails>post = postService.todoslosPost();
         return new ResponseEntity<>(post,HttpStatus.OK);
     }
-    
-    
-    @GetMapping("/{id}")
-    public ResponseEntity<PostDetails>PostById(@PathVariable("id") Long id)
+    @Operation(summary = "Busca un Post por su ID",
+               description = "Permite Mostrar un Post Segun su ID.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Post Listado"),
+        @ApiResponse(responseCode = "404",description = "Post no Encontrado")
+    })
+    @GetMapping("/{idPost}")
+    public ResponseEntity<PostDetails>PostById(@PathVariable("idPost") Long id)
     {
         PostDetails post = postService.buscarPost(id);
         if(post!=null)
@@ -51,32 +66,57 @@ public class PostController {
         }
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<String>modificarPost(@PathVariable("id")Long id,@RequestBody Post postModificado)
+    @Operation(summary = "Modifica un Post",
+               description = "Permite Modificar un Post. <br>"+"idUser: Usuario Activo <br>"+"idPost: ID del Post a Modificar"+
+               "<br>Solo El dueño del Post o un Usuario con Rol 'Administrador' pueden Modificar un Post")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Post Modificado"),
+        @ApiResponse(responseCode = "404",description = "Post no Modificado"),
+        @ApiResponse(responseCode = "401",description = "No tienes los Permisos Necesarios")
+    })
+    @PutMapping("/{idUser}/{idPost}/modificar")
+    public ResponseEntity<?>modificarPost(@PathVariable("idUser")Long idUser ,@PathVariable("idPost")Long idPost,@RequestBody PostModify postModificado)
     {
-        Post postActualizado = postService.modifcarPost(id, postModificado);
-
-        if(postActualizado!=null){
-        return new ResponseEntity<>("Post Actualizado",HttpStatus.OK);
+        Usuario usuarioEncontrado = usuarioService.obteneUsuario(idUser);
+        PostDetails postEncontrado = postService.buscarPost(idPost);
+        if(usuarioEncontrado.getRol().equals("Admin")|| postEncontrado.getUsuario().getId() == idUser)
+        {
+            Post postActualizado = postService.modifcarPost(idPost, postModificado);
+                if(postActualizado!=null){
+                return new ResponseEntity<>("Post Actualizado",HttpStatus.OK);
         }
-        else{
+            else{
             return new ResponseEntity<>("Post No Actualizado",HttpStatus.NOT_MODIFIED);
         }
+        }
+        return new ResponseEntity<>("No Tienes Permisos Para Modificar Este Post",HttpStatus.UNAUTHORIZED);
     }
 
+    //Completado Y Funcionando
     @Operation(summary= "Crear Post ", description = "Se debe Agregar el id del Usuario que crea el Post")
-    @PostMapping("/{id}/created")
-    public ResponseEntity<String>createPost(@PathVariable("id")Long id ,@RequestBody PostCreated post)
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "201", description = "Post Guardado"),
+        @ApiResponse(responseCode = "404",description = "Post no Guardado"),
+        @ApiResponse(responseCode = "401",description = "No tienes los Permisos Necesarios")
+    })
+    @PostMapping("/{idUser}/created")
+    public ResponseEntity<String>createPost(@PathVariable("idUser")Long idUser,@RequestBody PostCreated post)
     {
-        
-        Post postcreated = postService.guardarPost(id, post);
+        Usuario usuarioEncontrado = usuarioService.obteneUsuario(idUser);
 
+        Post postcreated = postService.guardarPost(idUser, post);
+
+        if(usuarioEncontrado!= null)
+        {
         if(postcreated!=null)
         {return new ResponseEntity<>("Noticia Guardara",HttpStatus.CREATED);}
         else{
-            return new ResponseEntity<>("Noticia No Guardada",HttpStatus.NOT_IMPLEMENTED);
-        }
+            return new ResponseEntity<>("Noticia No Guardada",HttpStatus.NOT_FOUND);
+        } 
     }
+        return new ResponseEntity<>("Usuario No Valido Para Crear una Noticia",HttpStatus.UNAUTHORIZED);
+    }
+    //*--------------------------------------------------------------------------------------------------------- */
 
     @DeleteMapping("/{id}/delete")
     public ResponseEntity<Boolean>delete(@PathVariable("id") Long id)
@@ -90,10 +130,11 @@ public class PostController {
             return new ResponseEntity<>(false,HttpStatus.NOT_FOUND);
     }}
 
+    
     @GetMapping("/by/{id}")
-    public ResponseEntity<List<Post>>getPostById(@PathVariable("id")Long id)
+    public ResponseEntity<List<PostDetails>>getPostById(@PathVariable("id")Long id)
     {
-        List<Post>postDetails = postService.buscarPostPorIdUser(id);
+        List<PostDetails>postDetails = postService.buscarPostPorIdUser(id);
         return new ResponseEntity<>(postDetails,HttpStatus.OK);
     }
 

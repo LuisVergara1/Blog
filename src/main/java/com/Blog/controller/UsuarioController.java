@@ -10,7 +10,8 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import com.Blog.DTO.UserCreated;
+
+import com.Blog.DTO.User.UserCreated;
 import com.Blog.entity.Usuario;
 import com.Blog.service.usuario.UsuarioService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -118,7 +119,14 @@ public class UsuarioController {
        return new ResponseEntity<>("No Tienes Permisos para Modificar este Usuario",HttpStatus.UNAUTHORIZED);
     }
 
-
+    @Operation(summary = "Eliminar Usuarios",
+               description = "Permite Eliminar Un Usuarios <br>"+"Tienes 2 Opciones de Eliminacion :"+
+               "1°:Un Usuario con Rol 'Administrador' puede Eliminar un Usuario. <br>"+
+               "2°:Un Usuario Puede Eliminar su Propia Cuenta")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Usuario creado exitosamente"),
+        @ApiResponse(responseCode = "400", description = "Solicitud inválida")
+    })
     @DeleteMapping("/{idUser}/{idDelete}")
     public ResponseEntity<?>eliminarUsuario(@PathVariable("idUser")Long id , @PathVariable("idDelete")Long idDelete)
     {

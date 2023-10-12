@@ -6,8 +6,8 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.Blog.DTO.ComentarioTDO;
-import com.Blog.DTO.UserPostDTO;
+import com.Blog.DTO.Comentarios.ComentarioTDO;
+import com.Blog.DTO.User.UserPostDTO;
 import com.Blog.entity.Comentario;
 import com.Blog.entity.Usuario;
 import com.Blog.repository.ComentarioRepository;

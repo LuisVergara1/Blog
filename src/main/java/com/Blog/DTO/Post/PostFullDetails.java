@@ -1,7 +1,9 @@
-package com.Blog.DTO;
+package com.Blog.DTO.Post;
 
 import java.util.List;
 
+import com.Blog.DTO.Comentarios.ComentarioTDO;
+import com.Blog.DTO.User.UserPostDTO;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

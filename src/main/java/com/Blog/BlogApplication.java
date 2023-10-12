@@ -22,7 +22,7 @@ public class BlogApplication {
 		return new OpenAPI()
 		.info(new Info()
 		.title("Sistema de Blog")
-		.version("0.1.1")
+		.version("1.0.1")
 		.description("EndPoint del Blog <br> Los EndPoint Se Modificaran una ver se Agrege SpringSecurity")
 		.termsOfService("http://swagger.io/terms/")
 		.license(new License().name("Apache 2.0").url("http:springdoc.org")));

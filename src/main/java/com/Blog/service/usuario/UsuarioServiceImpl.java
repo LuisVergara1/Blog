@@ -5,7 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.Blog.DTO.UserCreated;
+import com.Blog.DTO.User.UserCreated;
 import com.Blog.entity.Usuario;
 import com.Blog.repository.UsuarioRepository;
 

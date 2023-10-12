@@ -6,11 +6,12 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.Blog.DTO.ComentarioTDO;
-import com.Blog.DTO.PostCreated;
-import com.Blog.DTO.PostDetails;
-import com.Blog.DTO.PostFullDetails;
-import com.Blog.DTO.UserPostDTO;
+import com.Blog.DTO.Comentarios.ComentarioTDO;
+import com.Blog.DTO.Post.PostCreated;
+import com.Blog.DTO.Post.PostDetails;
+import com.Blog.DTO.Post.PostFullDetails;
+import com.Blog.DTO.Post.PostModify;
+import com.Blog.DTO.User.UserPostDTO;
 import com.Blog.entity.Post;
 import com.Blog.entity.Usuario;
 import com.Blog.repository.PostRepository;
@@ -90,15 +91,19 @@ public class PostServiceImpl implements PostService {
             return false;
         }
     }
+
+    
     @Override
-    public Post modifcarPost(Long id, Post postModificado) {
-        Post postEncontrado =  postRepository.findById(id).get();
+    public Post modifcarPost(Long idPost, PostModify postModificado) {
+        Post postEncontrado =  postRepository.findById(idPost).get();
         postEncontrado.setTitulo(postModificado.getTitulo());
         postEncontrado.setDescripcion(postModificado.getDescripcion());
         postEncontrado.setCategoria(postModificado.getCategoria());
         postRepository.save(postEncontrado);
         return postEncontrado;
     }
+
+
     @Override
     public Post guardarPost(Long id, PostCreated post) {
         Post newPost =  new Post();
@@ -114,10 +119,28 @@ public class PostServiceImpl implements PostService {
         return postRepository.save(post);
     }
     @Override
-    public List<Post> buscarPostPorIdUser(Long id) {
-        List<Post>postDetails = postRepository.buscarPostPorUser(id);
-        return postDetails;
+    public List<PostDetails> buscarPostPorIdUser(Long id) {
+       List<Post>posts = postRepository.buscarPostPorUser(id);
+       List<PostDetails>postDetailsList = new ArrayList<>();
+       for(Post postEncontrados :  posts)
+       {
+        Long userId = postEncontrados.getUsuario().getId_usuario();
+        Usuario usuarioEncontrado = usuarioService.obteneUsuario(userId);
+        PostDetails postDetails = new PostDetails();
+        postDetails.setId_post(postEncontrados.getId_post());
+        postDetails.setTitulo(postEncontrados.getTitulo());
+        postDetails.setDescripcion(postEncontrados.getDescripcion());
+        postDetails.setCategoria(postEncontrados.getCategoria());
+        UserPostDTO userPostDTO = new UserPostDTO();
+        userPostDTO.setId(usuarioEncontrado.getId_usuario());
+        userPostDTO.setNombre(usuarioEncontrado.getNombre());
+        userPostDTO.setRol(usuarioEncontrado.getRol());
+        postDetails.setUsuario(userPostDTO);
+        postDetailsList.add(postDetails);
+       }
+       return postDetailsList;
     }
+    
     @Override
     public PostFullDetails postFull(Long id) {
 
