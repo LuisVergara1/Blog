@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.Blog.DTO.User.UserCreated;
+import com.Blog.DTO.User.UserModify;
+import com.Blog.entity.Rol;
 import com.Blog.entity.Usuario;
 import com.Blog.service.usuario.UsuarioService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -26,19 +28,39 @@ public class UsuarioController {
 
     private final UsuarioService usuarioService;
     @Operation(summary = "Crear Usuario",
-               description = "Crea un nuevo usuario con el rol por defecto 'Usuario'.")
+               description = "Crea un nuevo usuario con el rol por defecto 'Usuario'. <br>"+"El Sistema valida que Correo y Username Sean Unicos")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Usuario creado exitosamente" ),
-        @ApiResponse(responseCode = "400", description = "Solicitud inválida")
+        @ApiResponse(responseCode = "400", description = "No se pudo Crear el Usuario")
     })
     @PostMapping("/created")
-    public ResponseEntity<?>createUser(@RequestBody UserCreated usuariocreado)
-    {   
+    public ResponseEntity<?> createUser(@RequestBody UserCreated usuarioCreado) {
         try {
-            Usuario newUser = usuarioService.guardarUsuario(usuariocreado);
-            return ResponseEntity.ok(newUser);
+            boolean existeCorreo = usuarioService.existsByCorreo(usuarioCreado.getCorreo());
+            boolean existeUserName = usuarioService.existsByUsername(usuarioCreado.getUserName());
+            if (usuarioCreado.getNombre() != null && !usuarioCreado.getNombre().isEmpty() &&
+                usuarioCreado.getUserName() != null && !usuarioCreado.getUserName().isEmpty() &&
+                usuarioCreado.getCorreo() != null && !usuarioCreado.getCorreo().isEmpty() &&
+                usuarioCreado.getContraseña() != null && !usuarioCreado.getContraseña().isEmpty()) {
+            if (existeCorreo && existeUserName) {
+                return ResponseEntity.badRequest().body("Correo y Nombre de Usuario no disponibles");
+            } else if (existeCorreo) {
+                return ResponseEntity.badRequest().body("Correo no disponible");
+            } else if (existeUserName) {
+                return ResponseEntity.badRequest().body("Nombre de Usuario no disponible");
+            } else {
+                Usuario newUser = usuarioService.guardarUsuario(usuarioCreado);
+                if (newUser != null) {
+                    return ResponseEntity.ok(newUser);
+                } else {
+                    return ResponseEntity.badRequest().body("Error al guardar el usuario");
+                }
+            }
+        }else{
+            return ResponseEntity.badRequest().body("Los Campos No pueden estar Vacios o Nulos");
+        }
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity.badRequest().body("Error al Guardar el Usuario");
         }
     }
 
@@ -46,13 +68,14 @@ public class UsuarioController {
                description = "Permite Listar Todos Los Usuarios solo a los Rol 'Administrador'.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Usuario creado exitosamente"),
-        @ApiResponse(responseCode = "400", description = "Solicitud inválida")
+        @ApiResponse(responseCode = "400", description = "Solicitud inválida"),
+        @ApiResponse(responseCode = "401" , description = "Sin Autorizacion")
     })
     @GetMapping("{idUser}/all")
     public ResponseEntity<?>getall(@PathVariable("idUser")Long id){
 
         Usuario usuarioEncontrado = usuarioService.obteneUsuario(id);
-        if(usuarioEncontrado.getRol().equals("Admin"))
+        if(usuarioEncontrado.getRol().equals(Rol.ADMINISTRADOR))
         {List<Usuario> usuarios = usuarioService.listarUsuario();
 
         return new ResponseEntity<>(usuarios,HttpStatus.OK);
@@ -80,7 +103,7 @@ public class UsuarioController {
             return new ResponseEntity<>("Usuario No Encontrado", HttpStatus.NOT_FOUND);
         }   
 
-        if (usuarioEncontrado.getRol().equals("Admin") || usuarioEncontrado.getId_usuario() == idFound) {
+        if (usuarioEncontrado.getRol().equals(Rol.ADMINISTRADOR) || usuarioEncontrado.getId_usuario() == idFound) {
             return new ResponseEntity<>(usuarioFound, HttpStatus.OK);
         } else {
             return new ResponseEntity<>("No Tienes Permisos Para Buscar Este Usuario", HttpStatus.UNAUTHORIZED);
@@ -94,15 +117,15 @@ public class UsuarioController {
         @ApiResponse(responseCode = "200", description = "Usuario Modificado"),
         @ApiResponse(responseCode = "304", description = "Usuario no Modificado"),
         @ApiResponse(responseCode = "404", description = "Usuario no Encontrado"),
-        @ApiResponse(responseCode = "401", description = "Sin Permisos Necesarios")
+        @ApiResponse(responseCode = "401", description = "Sin Autorizacion")
     })
     @PutMapping("/{idUser}/modificar")
-    public ResponseEntity<String>modificarUsuario(@PathVariable("idUser")Long id , @RequestBody Usuario usuarioModificado)
+    public ResponseEntity<String>modificarUsuario(@PathVariable("idUser")Long id , @RequestBody UserModify usuarioModificado)
     {
        Usuario usuarioencontrado = usuarioService.obteneUsuario(id);
 
        if(usuarioencontrado!=null){
-       if(usuarioencontrado.getRol().equals("Admin")|| usuarioencontrado.getId_usuario() == usuarioModificado.getId_usuario()){
+       if(usuarioencontrado.getRol().equals(Rol.ADMINISTRADOR)|| usuarioencontrado.getId_usuario() == usuarioModificado.getId()){
          Usuario usuarioActualizado = usuarioService.modificarUsuario(id, usuarioModificado);
          if(usuarioActualizado!=null){
             return new ResponseEntity<>("Usuario Actualizado",HttpStatus.OK);
@@ -136,7 +159,7 @@ public class UsuarioController {
             return new ResponseEntity<>("Usuario No Encontrado", HttpStatus.NOT_FOUND);
         }   
 
-        if (usuarioEncontrado.getRol().equals("Admin") || usuarioEncontrado.getId_usuario() == idDelete) {
+        if (usuarioEncontrado.getRol().equals(Rol.ADMINISTRADOR) || usuarioEncontrado.getId_usuario() == idDelete) {
             Boolean result = usuarioService.eliminarUsuario(idDelete);
             if(result ==true){
             return new ResponseEntity<>("Usuario Eliminado", HttpStatus.OK);

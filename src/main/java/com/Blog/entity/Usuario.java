@@ -26,6 +26,6 @@ public class Usuario {
     public String correo;
     public String userName;
     public String contraseña;
-    public String rol;
+    public Rol rol;
 
 }

@@ -3,6 +3,7 @@ package com.Blog.service.usuario;
 import java.util.List;
 
 import com.Blog.DTO.User.UserCreated;
+import com.Blog.DTO.User.UserModify;
 import com.Blog.entity.Usuario;
 
 public interface UsuarioService {
@@ -11,7 +12,7 @@ public interface UsuarioService {
 
     List<Usuario> listarUsuario();
 
-    Usuario modificarUsuario(Long id,Usuario usuarioModificado);
+    Usuario modificarUsuario(Long id,UserModify usuarioModificado);
 
     Boolean eliminarUsuario (Long id);
 
@@ -21,6 +22,10 @@ public interface UsuarioService {
     //Solo para Carga de Datos de H2
     //----------------------------------------------->
     Usuario guardarUsuariosH2(Usuario usuario);
+
+    boolean existsByCorreo(String correo);
+
+    boolean existsByUsername(String username);
     //----------------------------------------------->
 
 

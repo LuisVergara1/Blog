@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.Blog.DTO.User.UserCreated;
+import com.Blog.DTO.User.UserModify;
+import com.Blog.entity.Rol;
 import com.Blog.entity.Usuario;
 import com.Blog.repository.UsuarioRepository;
 
@@ -18,29 +20,28 @@ public class UsuarioServiceImpl implements UsuarioService{
     @Override
     public Usuario guardarUsuario(UserCreated usuario) {
       
-      if (usuario.getNombre() != null && !usuario.getNombre().isEmpty() &&
-        usuario.getUserName() != null && !usuario.getUserName().isEmpty() &&
-        usuario.getCorreo() != null && !usuario.getCorreo().isEmpty() &&
-        usuario.getContraseña() != null && !usuario.getContraseña().isEmpty()) {
         Usuario user = new Usuario();
             user.setNombre(usuario.getNombre());
             user.setCorreo(usuario.getCorreo());
             user.setUserName(usuario.getUserName());
             user.setContraseña(usuario.getContraseña());
-            user.setRol("Usuario");
+            user.setRol(Rol.USUARIO);
             return usuarioRepository.save(user);
-      }
-      throw new IllegalArgumentException("Los campos no pueden estar vacíos o nulos");
     }
 
     @Override
-    public Usuario modificarUsuario(Long id, Usuario usuarioModificado) {
+    public Usuario modificarUsuario(Long id, UserModify usuarioModificado) {
        Usuario usuarioEncontrado = usuarioRepository.findById(id).get();
-       Long idModificado = usuarioModificado.getId_usuario();
+       Long idModificado = usuarioModificado.getId();
        Usuario usuarioModicar = usuarioRepository.findById(idModificado).get();
        usuarioModicar.setContraseña(usuarioModificado.getContraseña());
-       if(usuarioEncontrado.getRol().equals("Admin")){
-       usuarioModicar.setRol(usuarioModificado.getRol());
+       if(usuarioEncontrado.getRol().equals(Rol.ADMINISTRADOR)){
+        Rol rol = Rol.fromCodigo(usuarioModificado.getRol());
+        if(rol != null){
+        usuarioModicar.setRol(Rol.fromCodigo(usuarioModificado.getRol()));}
+        else{
+            return null;
+        }
        }
        usuarioRepository.save(usuarioModicar);
        return usuarioEncontrado;
@@ -72,5 +73,17 @@ public class UsuarioServiceImpl implements UsuarioService{
        
         return usuarioRepository.save(usuario);
     }
+
+    @Override
+    public boolean existsByCorreo(String correo) {
+        return usuarioRepository.existsByCorreo(correo);
+    }
+
+    @Override
+    public boolean existsByUsername(String username) {
+        
+        return usuarioRepository.existsByUserName(username);
+    }
+
     
 }

@@ -5,6 +5,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 import com.Blog.entity.Comentario;
 import com.Blog.entity.Post;
+import com.Blog.entity.Rol;
 import com.Blog.entity.Usuario;
 import com.Blog.service.comentario.ComentarioService;
 import com.Blog.service.post.PostService;
@@ -45,8 +46,17 @@ public class DatosIniciales implements CommandLineRunner {
         usuario1.setUserName("Luzhitto");
         usuario1.setCorreo("luismarcelo.v.c@hotmail.com");
         usuario1.setContraseña("User123");
-        usuario1.setRol("Admin");
+        usuario1.setRol(Rol.ADMINISTRADOR);
         usuarioService.guardarUsuariosH2(usuario1);
+
+        Usuario usuario2 = new Usuario();
+        usuario2.setNombre("Test 2 ");
+        usuario2.setUserName("Test");
+        usuario2.setCorreo("test@hotmail.com");
+        usuario2.setContraseña("User123");
+        usuario2.setRol(Rol.USUARIO);
+        usuarioService.guardarUsuariosH2(usuario2);
+
 
         Post post1 = new Post();
         post1.setTitulo("Titulo Noticia1");
