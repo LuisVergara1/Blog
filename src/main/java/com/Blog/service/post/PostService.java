@@ -14,6 +14,8 @@ public interface PostService {
 
     PostDetails buscarPost(Long id);
 
+    Post buscarPostComentario(Long id);
+
     Post modifcarPost(Long idPost, PostModify postModificado);
 
     Boolean eliminarPost(Long id);

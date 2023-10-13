@@ -33,8 +33,4 @@ public class Comentario {
     @JoinColumn(name ="id_usuario",referencedColumnName = "id_usuario")
     Usuario usuario;
 
-    
-
-
-
 }

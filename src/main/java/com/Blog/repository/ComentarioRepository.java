@@ -3,6 +3,7 @@ package com.Blog.repository;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
@@ -13,4 +14,8 @@ public interface ComentarioRepository extends JpaRepository<Comentario,Long> {
 
     @Query("SELECT c FROM Comentario c WHERE c.post.id_post = :idPost")
     List<Comentario> findComentariosByPostId(Long idPost);
+    
+    @Modifying
+    @Query("DELETE FROM Comentario c WHERE c.post.id_post = :idPost")
+    int deleteComentariosByPostId(Long idPost);
 }

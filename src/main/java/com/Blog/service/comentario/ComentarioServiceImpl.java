@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
+import org.springframework.stereotype.Service;
 import com.Blog.DTO.Comentarios.ComentarioTDO;
 import com.Blog.DTO.User.UserPostDTO;
 import com.Blog.entity.Comentario;
@@ -13,18 +13,19 @@ import com.Blog.entity.Usuario;
 import com.Blog.repository.ComentarioRepository;
 import com.Blog.service.usuario.UsuarioService;
 
+
 @Service
 public class ComentarioServiceImpl  implements ComentarioService{
 
-    @Autowired
+     @Autowired
      private  ComentarioRepository comentarioRepository; 
      @Autowired 
      private UsuarioService usuarioService;
 
     @Override
-    public Comentario guardarComentario(Long id,Comentario comentario) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'guardarComentario'");
+    public Comentario guardarComentario(Comentario comentario) {
+        return comentarioRepository.save(comentario);
+
     }
 
     @Override
@@ -45,17 +46,13 @@ public class ComentarioServiceImpl  implements ComentarioService{
             comentarioTDO.setUsuario(userDTO);
             comentarioTDO.setId(comentariosEncontrados.getId_comentario());
             comentarioTDO.setDescripcion(comentariosEncontrados.getComentario());
+            comentarioTDO.setIdPost(comentariosEncontrados.getPost().getId_post());
             comentariosdto.add(comentarioTDO);
         }
         return comentariosdto;
 
     }
 
-    @Override
-    public Comentario modificarComentario(Long id, Comentario comentarioModificado) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'modificarComentario'");
-    }
 
     @Override
     public Boolean eliminarComentario(Long id) {
@@ -86,10 +83,25 @@ public class ComentarioServiceImpl  implements ComentarioService{
             comentarioTDO.setUsuario(userDTO);
             comentarioTDO.setId(comentariosEncontrados.getId_comentario());
             comentarioTDO.setDescripcion(comentariosEncontrados.getComentario());
+            comentarioTDO.setIdPost(comentariosEncontrados.getPost().getId_post());
             comentarioTDOs.add(comentarioTDO);
         }
 
         return  comentarioTDOs;
+    }
+
+    @Override
+    public Boolean deteleComentByIdPost(Long idPost) {
+
+      int estadoEliminacion = comentarioRepository.deleteComentariosByPostId(idPost);
+      if(estadoEliminacion >= 0)
+      {
+        return true;
+      }
+      else{
+        return false;
+      }
+
     }
 
 

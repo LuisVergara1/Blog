@@ -2,6 +2,7 @@ package com.Blog.service.post;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,11 +28,17 @@ import lombok.NoArgsConstructor;
 public class PostServiceImpl implements PostService {
 
     @Autowired
-    PostRepository postRepository;
+    private PostRepository postRepository;
     @Autowired
-    UsuarioService usuarioService;
+    private UsuarioService usuarioService;
     @Autowired
-    ComentarioService comentarioService;
+    private ComentarioService comentarioService;
+
+     @Override
+    public Post buscarPostComentario(Long id) {
+    Post postEncontrado = postRepository.findById(id).orElse(null);
+        return postEncontrado;
+    }  
 
     @Override
     public List<PostDetails> todoslosPost() {
@@ -82,15 +89,18 @@ public class PostServiceImpl implements PostService {
 
     
     @Override
-    public Boolean eliminarPost(Long id) {
-        try{
+public Boolean eliminarPost(Long id) {
+    Optional<Post> postOptional = postRepository.findById(id);
+    if (postOptional.isPresent()) {
+        try {
             postRepository.deleteById(id);
             return true;
-        }catch(Exception e)
-        {
+        } catch (Exception e) {
             return false;
         }
     }
+    return false; // El Post no existe, por lo que no se puede eliminar.
+}
 
     
     @Override
@@ -167,5 +177,6 @@ public class PostServiceImpl implements PostService {
         }else{
             return null;
         }
-    }  
+    }
+   
 }

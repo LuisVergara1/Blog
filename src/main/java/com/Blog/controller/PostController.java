@@ -18,6 +18,7 @@ import com.Blog.DTO.Post.PostDetails;
 import com.Blog.DTO.Post.PostFullDetails;
 import com.Blog.DTO.Post.PostModify;
 import com.Blog.entity.Post;
+import com.Blog.entity.Rol;
 import com.Blog.entity.Usuario;
 import com.Blog.service.post.PostService;
 import com.Blog.service.usuario.UsuarioService;
@@ -79,7 +80,7 @@ public class PostController {
     {
         Usuario usuarioEncontrado = usuarioService.obteneUsuario(idUser);
         PostDetails postEncontrado = postService.buscarPost(idPost);
-        if(usuarioEncontrado.getRol().equals("Admin")|| postEncontrado.getUsuario().getId() == idUser)
+        if(usuarioEncontrado.getRol().equals(Rol.ADMINISTRADOR)|| postEncontrado.getUsuario().getId() == idUser)
         {
             Post postActualizado = postService.modifcarPost(idPost, postModificado);
                 if(postActualizado!=null){
@@ -118,18 +119,25 @@ public class PostController {
     }
     //*--------------------------------------------------------------------------------------------------------- */
 
+    @Operation(summary= "Eliminar Post ", description = "Se Debe Indicar el id del Post a Borrar <br>"+"Si se Elimina un Post Automaticamente Se eliminan todos los Comentarios "
+    +"Relacionados al Post")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Post Eliminado"),
+        @ApiResponse(responseCode = "400",description = "Post no Eliminado"),
+    })
     @DeleteMapping("/{id}/delete")
-    public ResponseEntity<Boolean>delete(@PathVariable("id") Long id)
+    public ResponseEntity<?>delete(@PathVariable("id") Long id)
     {
-        Boolean delete = postService.eliminarPost(id);
+   
 
-        if(delete)
-        {
-            return new ResponseEntity<>(true, HttpStatus.OK);
-        }else{
-            return new ResponseEntity<>(false,HttpStatus.NOT_FOUND);
-    }}
+     Boolean delete = postService.eliminarPost(id);
+     if(delete)
+     {
+        return ResponseEntity.ok("Post Eliminado");
+     }
+     return ResponseEntity.badRequest().body("No Se pudo Eliminar");
 
+    }
     
     @GetMapping("/by/{id}")
     public ResponseEntity<List<PostDetails>>getPostById(@PathVariable("id")Long id)

@@ -15,4 +15,5 @@ public interface PostRepository extends JpaRepository<Post,Long> {
     @Query( value = "SELECT * FROM POST where id_Usuario=:id",nativeQuery = true)
     List<Post>buscarPostPorUser(Long id);
 
+
 }
